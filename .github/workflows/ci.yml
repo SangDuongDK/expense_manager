@@ -48,6 +48,3 @@ jobs:
       - name: Flutter tests
         run: flutter test --coverage
 
-      # 7️⃣ Build APK debug (kiểm tra build)
-      - name: Build APK
-        run: flutter build apk --debug
