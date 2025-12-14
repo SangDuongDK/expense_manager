@@ -1,0 +1,42 @@
+name: Flutter CI
+
+# Khi nào chạy CI
+on:
+  push:
+    branches:
+      - main      # Chạy khi push vào nhánh main
+  pull_request:
+    branches:
+      - main      # Chạy khi có PR vào nhánh main
+
+jobs:
+  build-and-test:
+    name: Build & Test Flutter App
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout source code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Cài Flutter
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.13.7'  # Chọn phiên bản Flutter đang dùng
+
+      # 3. Install dependencies
+      - name: Flutter pub get
+        run: flutter pub get
+
+      # 4. Run lint (optional)
+      - name: Flutter analyze
+        run: flutter analyze
+
+      # 5. Run unit & widget tests
+      - name: Flutter tests
+        run: flutter test --coverage
+
+      # 6. Build APK (optional)
+      - name: Build APK
+        run: flutter build apk --debug
