@@ -1,13 +1,13 @@
 name: Flutter CI
 
-# Khi nào chạy CI
+# Chạy khi push hoặc pull request vào nhánh main
 on:
   push:
     branches:
-      - main      # Chạy khi push vào nhánh main
+      - main
   pull_request:
     branches:
-      - main      # Chạy khi có PR vào nhánh main
+      - main
 
 jobs:
   build-and-test:
@@ -15,28 +15,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout source code
+      # 1️⃣ Checkout source code
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Cài Flutter
+      # 2️⃣ Setup Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.52.2'  
+          flutter-version: '3.35.2'  # Chọn phiên bản Flutter đang dùng trên máy local
 
-      # 3. Install dependencies
+      # 3️⃣ Cache dependencies để tăng tốc pub get
+      - name: Cache Flutter packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      # 4️⃣ Install dependencies
       - name: Flutter pub get
         run: flutter pub get
 
-      # 4. Run lint (optional)
+      # 5️⃣ Run static analysis (lint)
       - name: Flutter analyze
         run: flutter analyze
 
-      # 5. Run unit & widget tests
+      # 6️⃣ Run unit & widget tests
       - name: Flutter tests
         run: flutter test --coverage
 
-      # 6. Build APK (optional)
+      # 7️⃣ Build APK debug (kiểm tra build)
       - name: Build APK
         run: flutter build apk --debug
